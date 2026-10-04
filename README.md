@@ -5,6 +5,21 @@ backend state machine, and alerts the caretaker by **Web Push even when the app 
 dispenser (Arduino UNO + DS3231 + SIM800L) doesn't exist yet, so a **device simulator** (a web page and a CLI) sends events over
 **the same HTTP contract the hardware will use**.
 
+## At a glance
+
+- **For:** family members and carers who look after someone on a daily medicine routine.
+- **What it does:** plan morning / afternoon / night doses, see today's doses live (taken, due, missed),
+  get phone or desktop alerts when a dose is missed or the dispenser goes offline, and review adherence history.
+- **Stack:** FastAPI, PostgreSQL, SQLAlchemy + Alembic, WebSockets, Web Push (VAPID) · React, TypeScript,
+  Vite, Tailwind CSS, TanStack Query, GSAP, Three.js (installable PWA).
+- **Hardware:** an Arduino UNO + SIM800L dispenser is planned. Until then the built-in simulator plays the device.
+- **Status:** software MVP complete and tested (pytest, Vitest, Playwright end-to-end including real push delivery).
+- **Quick start:** `pip install cryptography && python backend/scripts/gen_env.py` → `docker compose --profile app up --build` →
+  open http://127.0.0.1:8080 (full setup below).
+
+> CareDose records medication information entered by caretakers. It does not give medical advice, and the
+> seed data is fictional.
+
 ```
 Device simulator / future dispenser ──X-Device-Key──> FastAPI ──> PostgreSQL
                                                          │
