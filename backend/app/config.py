@@ -1,7 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_ENV = Path(__file__).resolve().parents[2] / ".env"
@@ -13,6 +13,14 @@ class Settings(BaseSettings):
     environment: str = "development"
     database_url: str
     test_database_url: str | None = None
+
+    @field_validator("database_url", "test_database_url")
+    @classmethod
+    def _psycopg_driver(cls, v: str | None) -> str | None:
+        # Hosted Postgres (Neon, Supabase, Vercel Marketplace) hands out postgres:// URLs.
+        if v and v.startswith(("postgres://", "postgresql://")):
+            return "postgresql+psycopg://" + v.split("://", 1)[1]
+        return v
 
     jwt_secret: str = Field(min_length=32)
     jwt_access_token_expire_minutes: int = 30
@@ -26,6 +34,8 @@ class Settings(BaseSettings):
     # Hosts (and their subdomains) that browsers use for Web Push: Chrome/Edge(FCM), Firefox, Edge(WNS), Safari.
     push_endpoint_hosts: str = "fcm.googleapis.com,push.services.mozilla.com,notify.windows.com,push.apple.com"
     device_api_secret: str = Field(min_length=32)
+    # Vercel Cron sends "Authorization: Bearer <CRON_SECRET>" to the engine tick endpoint.
+    cron_secret: str = ""
 
     # Defaults copied into system_config on first start; admins edit them in the app.
     missed_dose_timeout_minutes: int = 60

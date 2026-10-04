@@ -48,7 +48,9 @@ function useDashboard() {
     queryKey: ['dashboard'],
     queryFn: () => get<DashboardData>('/dashboard'),
     // Live updates drive refreshes; poll only as a fallback while the socket is down.
-    refetchInterval: status === 'connected' ? 120_000 : 30_000,
+    // Socket messages come from the instance that handled the change; with several serverless
+    // instances some can be missed, so keep a modest safety poll even while connected.
+    refetchInterval: status === 'connected' ? 60_000 : 30_000,
   })
 }
 

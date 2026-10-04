@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from typing import Any, Protocol
@@ -56,7 +57,9 @@ class WebPushProvider:
 
 provider: PushProvider = WebPushProvider()
 _executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="push")
-sync_delivery = False  # tests flip this to deliver inline
+# Serverless (Vercel) may freeze background threads once the response is sent, so deliver inline there.
+# Tests also flip this to deliver inline.
+sync_delivery = bool(os.environ.get("VERCEL"))
 
 
 def schedule_delivery(notification_id: int) -> None:

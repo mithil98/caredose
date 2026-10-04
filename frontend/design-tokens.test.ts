@@ -44,3 +44,10 @@ describe('DESIGN.md tokens', () => {
     expect(t.roles).toMatchObject({ ink: '#0a2540', accent: '#00d4aa', light: '#f6f9fc' })
   })
 })
+
+describe('missing DESIGN.md', () => {
+  it('falls back to default tokens instead of failing the build', async () => {
+    const { readDesign } = await import('./design-tokens.ts')
+    expect(readDesign('/definitely/not/here/DESIGN.md').roles.ink).toBe('#121213')
+  })
+})

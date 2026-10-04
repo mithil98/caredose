@@ -1,9 +1,10 @@
 import asyncio
 import contextlib
+import hmac
 import logging
 from collections.abc import AsyncIterator
 
-from fastapi import APIRouter, FastAPI, Request, Response
+from fastapi import APIRouter, FastAPI, Header, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
@@ -59,6 +60,18 @@ async def security_headers(request: Request, call_next) -> Response:  # noqa: AN
 api = APIRouter(prefix="/api/v1")
 for module in (auth, patients, medicines, schedules, devices, events, doses, notifications, analytics, admin, ws):
     api.include_router(module.router)
+
+
+@api.get("/internal/engine/tick", tags=["system"], include_in_schema=False)
+def engine_tick(authorization: str | None = Header(default=None)) -> dict[str, bool]:
+    """Run one dose-engine pass. Called by Vercel Cron, where instances do not stay alive for the
+    in-process scheduler loop. Safe to call concurrently (advisory lock) and repeatedly (idempotent)."""
+    secret = get_settings().cron_secret
+    if not secret:
+        raise HTTPException(503, "CRON_SECRET is not configured")
+    if not authorization or not hmac.compare_digest(authorization, f"Bearer {secret}"):
+        raise HTTPException(401, "Invalid cron credentials")
+    return {"ran": scheduler.tick()}
 
 
 @api.get("/health", tags=["system"])

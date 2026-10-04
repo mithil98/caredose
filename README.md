@@ -100,7 +100,7 @@ docker-compose.yml       Postgres (+ app profile: backend + nginx frontend)
 
 ## Run locally (development)
 
-Requirements: Docker, Python 3.11+, Node 20+.
+Requirements: Docker, Python 3.12+, Node 20+.
 
 ```bash
 # 1. secrets + VAPID keys -> .env (never commit it)
@@ -133,6 +133,29 @@ docker compose --profile app exec backend python -m app.seed --password demo-pas
 
 The backend container runs `alembic upgrade head` on start. nginx serves the SPA and proxies `/api` and the
 WebSocket, so the app is same-origin (refresh cookie, no CORS).
+
+### Deploy to Vercel (Services)
+
+`vercel.json` deploys both parts as one Vercel project: `frontend` (Vite, serves every path) and `backend`
+(FastAPI, serves `/api/*`; paths reach FastAPI unchanged, e.g. `/api/v1/health`). The browser only calls
+same-origin `/api/...`, so no service bindings are needed.
+
+1. Add a Postgres database (for example Neon from the Vercel Marketplace). A `postgres://` URL is accepted.
+2. Set project environment variables: `DATABASE_URL`, `JWT_SECRET`, `DEVICE_API_SECRET`, `VAPID_PUBLIC_KEY`,
+   `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `CRON_SECRET`, `ENVIRONMENT=production`,
+   `CORS_ORIGINS=https://<your-domain>` and optionally `VITE_ENABLE_SIMULATOR=true` (build time).
+   `backend/scripts/gen_env.py` generates suitable secrets and VAPID keys.
+3. Deploy. The backend build runs `alembic upgrade head` against that environment's `DATABASE_URL`.
+4. Optional demo data: run `python -m app.seed` locally with `DATABASE_URL` pointing at the hosted database.
+
+Serverless differences, handled in code:
+- **Dose engine:** Vercel Cron calls `GET /api/v1/internal/engine/tick` (protected by `CRON_SECRET`) every
+  minute, because instances do not stay alive for the in-process loop. Per-minute crons need a Pro plan; on
+  Hobby, crons run at most daily, so due/missed/offline alerts would lag.
+- **Push:** sent inside the request on Vercel (`VERCEL` env var), not in a background thread.
+- **Live updates:** WebSockets work on Fluid compute, but the hub is per instance, so the dashboard also
+  polls every 60 s. Move fan-out to Postgres LISTEN/NOTIFY or Redis for strict real time.
+- **CLI simulator:** `CARETAKER_API=https://<your-domain>/api/v1 python backend/scripts/simulate.py ...`
 
 ## Environment variables
 

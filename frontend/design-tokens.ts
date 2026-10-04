@@ -4,7 +4,7 @@
  *
  *   import 'virtual:design-tokens.css'   // in main.tsx
  */
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Plugin } from 'vite'
@@ -144,6 +144,11 @@ export function toCss(t: DesignTokens) {
 }
 
 export function readDesign(file: string) {
+  // A service build that only checks out frontend/ will not see ../DESIGN.md: fall back to defaults.
+  if (!existsSync(file)) {
+    console.warn(`[design-tokens] ${file} not found, using default tokens`)
+    return parseDesign('')
+  }
   return parseDesign(readFileSync(file, 'utf8'))
 }
 
@@ -158,7 +163,7 @@ export function designTokens(file = DESIGN_FILE): Plugin {
     resolveId: (id) => (id === VIRTUAL ? RESOLVED : undefined),
     load(id) {
       if (id !== RESOLVED) return
-      this.addWatchFile(file)
+      if (existsSync(file)) this.addWatchFile(file)
       return toCss(readDesign(file))
     },
     configureServer(server) {
