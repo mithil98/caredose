@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest>=8.4
+ruff>=0.12
+http-ece>=1.2

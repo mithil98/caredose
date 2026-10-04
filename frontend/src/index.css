@@ -1,0 +1,337 @@
+@import 'tailwindcss';
+
+/*
+  CareDose design tokens.
+  - Palette: Color Hunt #F9F7F7 / #DBE2EF / #3F72AF / #112D4E
+    (https://colorhunt.co/palette/f9f7f7dbe2ef3f72af112d4e): warm white, mist blue, harbor blue, deep navy.
+    --g1..--g3 are tints of the harbor blue used for quiet two-tone fills (no neon).
+  - Font, radii and motion curves still come from DESIGN.md (`--ds-*`, design-tokens Vite plugin).
+  - Status colours are reserved: ok = taken/online, warn = pending/due, bad = missed/offline,
+    info = informational. They always ship with an icon and a text label.
+  Shape rule: controls/badges = radius-sm, panels/dialogs/chips = radius-md (from DESIGN.md).
+  z-index scale: header 20, bottom nav 30, toasts 40, dialogs (top layer), welcome loader 60.
+*/
+:root {
+  --g1: #dbe2ef;
+  --g2: #7f9fcf;
+  --g3: #3f72af;
+  --night: #112d4e;
+  --night-2: #1a3a63;
+  --night-ink: #f9f7f7;
+  --night-ink-2: #b9c6db;
+
+  --canvas: #f9f7f7;
+  --surface: #fffefe;
+  --surface-2: #eef2f8;
+  --border: #dbe2ef;
+  --border-strong: #b7c4da;
+  --ink: #112d4e;
+  --ink-2: #3a4f6c;
+  --ink-3: #586a85;
+
+  --brand: #3f72af;
+  --brand-hover: #2f5d94;
+  --brand-soft: #e6ecf6;
+  --brand-ink: #24508a;
+  --on-brand: #fffefe;
+
+  --ok: #15803d;
+  --ok-soft: #dcfce7;
+  --ok-ink: #166534;
+  --warn: #b45309;
+  --warn-soft: #fef3c7;
+  --warn-ink: #92400e;
+  --bad: #dc2626;
+  --bad-soft: #fee2e2;
+  --bad-ink: #991b1b;
+  --info: #5b4fa3;
+  --info-soft: #ece9f8;
+  --info-ink: #463c86;
+
+  --shadow-tint: 212 64% 19%;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --g1: #dbe2ef;
+    --g2: #9db6dc;
+    --g3: #6f97cc;
+    --night: #0c2240;
+    --night-2: #15335a;
+
+    --canvas: #0a1a30;
+    --surface: #102440;
+    --surface-2: #16304f;
+    --border: #213c60;
+    --border-strong: #2f4f78;
+    --ink: #f9f7f7;
+    --ink-2: #c6d1e2;
+    --ink-3: #97a8c1;
+
+    --brand: #8fb0dd;
+    --brand-hover: #b3cbec;
+    --brand-soft: #1b3a62;
+    --brand-ink: #b3cbec;
+    --on-brand: #112d4e;
+
+    --ok: #4ade80;
+    --ok-soft: #0f2e1d;
+    --ok-ink: #86efac;
+    --warn: #fbbf24;
+    --warn-soft: #33260c;
+    --warn-ink: #fcd34d;
+    --bad: #f87171;
+    --bad-soft: #3a1416;
+    --bad-ink: #fca5a5;
+    --info: #a5a0e8;
+    --info-soft: #241f4d;
+    --info-ink: #c4c0f2;
+
+    --shadow-tint: 214 70% 4%;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --font-sans: var(--ds-font-sans);
+  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  --text-display: var(--ds-text-3xl);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.03em;
+  --text-title: var(--ds-text-2xl);
+  --text-title--line-height: 1.1;
+  --text-title--letter-spacing: -0.02em;
+  --text-section: var(--ds-text-xl);
+  --text-section--line-height: 1.25;
+  --text-section--letter-spacing: -0.01em;
+
+  --radius-xs: var(--ds-radius-sm);
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-sm);
+  --radius-lg: var(--ds-radius-sm);
+  --radius-xl: var(--ds-radius-md);
+  --radius-2xl: var(--ds-radius-md);
+  --radius-3xl: var(--ds-radius-md);
+
+  --default-transition-duration: var(--ds-duration-base);
+  --default-transition-timing-function: var(--ds-ease-standard);
+  --ease-emphasis: var(--ds-ease-emphasis);
+  --ease-reveal: var(--ds-ease-reveal);
+
+  --color-g1: var(--g1);
+  --color-g2: var(--g2);
+  --color-g3: var(--g3);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-night-ink: var(--night-ink);
+  --color-night-ink-2: var(--night-ink-2);
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+  --color-on-brand: var(--on-brand);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-ok-ink: var(--ok-ink);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-ink: var(--warn-ink);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-bad-ink: var(--bad-ink);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-ink: var(--info-ink);
+
+  /* tinted, never pure-black shadows */
+  --shadow-panel: 0 1px 2px hsl(var(--shadow-tint) / 0.05), 0 8px 24px -16px hsl(var(--shadow-tint) / 0.18);
+  --shadow-lift: 0 2px 4px hsl(var(--shadow-tint) / 0.06), 0 18px 36px -18px hsl(var(--shadow-tint) / 0.28);
+  --shadow-pop: 0 24px 56px -16px hsl(var(--shadow-tint) / 0.35), 0 2px 8px hsl(var(--shadow-tint) / 0.08);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas font-sans leading-normal text-ink antialiased;
+    font-size: max(15px, var(--ds-text-lg));
+  }
+  /* Soft brand mesh behind the app, fixed and non-interactive (no scroll repaint). */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(42rem 30rem at 95% -10%, color-mix(in oklab, var(--g1) 70%, transparent), transparent 70%),
+      radial-gradient(36rem 28rem at -10% 110%, color-mix(in oklab, var(--g1) 55%, transparent), transparent 70%);
+  }
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--g1);
+    color: var(--night);
+  }
+  dialog::backdrop {
+    background: color-mix(in oklab, var(--night) 55%, transparent);
+    backdrop-filter: blur(3px);
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: lining-nums;
+}
+
+@utility link {
+  color: var(--brand-ink);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, var(--brand) 35%, transparent);
+  text-underline-offset: 4px;
+  transition: text-decoration-color var(--ds-duration-base) var(--ds-ease-standard);
+  &:hover {
+    text-decoration-color: var(--brand);
+  }
+}
+
+@utility pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+/* Quiet two-tone fills from the palette (harbor blue -> mist), and the accent text colour. */
+@utility bg-aqua {
+  background-image: linear-gradient(135deg, var(--g3), color-mix(in oklab, var(--g3) 70%, var(--g2)));
+}
+@utility text-aqua {
+  color: var(--g1);
+}
+/* Deep navy stage with one soft harbor-blue light (sign-in, loader, dashboard hero, sidebar). */
+@utility bg-stage {
+  background:
+    radial-gradient(70% 90% at 90% 0%, color-mix(in oklab, var(--g3) 45%, transparent), transparent 70%),
+    radial-gradient(60% 70% at 0% 100%, color-mix(in oklab, var(--g2) 18%, transparent), transparent 70%),
+    linear-gradient(165deg, var(--night-2), var(--night));
+}
+
+/*
+  CSS motion (simple pages). Rich choreography (sign-in, loader, dashboard) lives in GSAP; see
+  src/lib/motion.ts. Everything collapses under prefers-reduced-motion.
+*/
+@keyframes ds-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes ds-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 -0.25em 0);
+  }
+}
+@keyframes ds-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes flash {
+  0% {
+    box-shadow: 0 0 0 0 var(--brand);
+  }
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+@keyframes pulse-dot {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes grow-up {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+.animate-rise {
+  animation: ds-rise calc(var(--ds-duration-slow) + 0.15s) var(--ds-ease-emphasis) both;
+}
+.reveal {
+  animation: ds-reveal calc(var(--ds-duration-reveal) * 0.6) var(--ds-ease-reveal) both;
+}
+.page-enter {
+  animation: ds-fade calc(var(--ds-duration-reveal) * 0.35) var(--ds-ease-emphasis) both;
+}
+.stagger > * {
+  animation: ds-rise calc(var(--ds-duration-reveal) * 0.45) var(--ds-ease-emphasis) both;
+}
+.stagger > :nth-child(2) {
+  animation-delay: 60ms;
+}
+.stagger > :nth-child(3) {
+  animation-delay: 120ms;
+}
+.stagger > :nth-child(4) {
+  animation-delay: 180ms;
+}
+.stagger > :nth-child(5) {
+  animation-delay: 240ms;
+}
+.stagger > :nth-child(n + 6) {
+  animation-delay: 300ms;
+}
+.bar-grow {
+  transform-origin: bottom;
+  animation: grow-up calc(var(--ds-duration-reveal) * 0.5) var(--ds-ease-emphasis) both;
+}
+.animate-flash {
+  animation: flash 1.2s ease-out 2;
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

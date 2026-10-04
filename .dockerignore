@@ -1,0 +1,8 @@
+# root build context (frontend image): keep it small
+.env
+backend/
+**/node_modules
+frontend/dist
+frontend/dev-dist
+frontend/test-results
+frontend/playwright-report

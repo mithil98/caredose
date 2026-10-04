@@ -1,0 +1,16 @@
+# secrets
+.env
+*.env.local
+
+# python
+backend/.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# node
+frontend/node_modules/
+frontend/dist/
+frontend/dev-dist/
+frontend/test-results/
+frontend/playwright-report/
